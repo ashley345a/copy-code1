@@ -3,15 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>蝦皮優惠頁面 - 即時編輯</title>
+<title>蝦皮優惠頁面 - 編輯模式</title>
 <style>
-/* 基本版面 */
 body {margin:0; font-family:"Noto Sans TC",sans-serif; background:#f9f8f6; display:flex; justify-content:center; padding:20px 0;}
 .paper {background:#fffaf6; border-radius:24px; padding:24px 18px 40px; width:95%; max-width:440px; box-shadow:0 8px 20px rgba(0,0,0,0.08); text-align:center; position:relative;}
 .title {font-size:18px; font-weight:600; margin-bottom:8px; color:#3a3d55;}
 .subtitle {font-size:13px; color:#4b6c8c; margin-bottom:18px;}
-.product-row {display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:16px; text-align:center;}
-.product {width:30%; background:#fff1f0; border-radius:14px; padding:8px; font-size:13px; position:relative; border:2px dashed #f0c6c0; margin-bottom:8px;}
+.product-row {display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:16px; text-align:center;}
+.product {min-height:160px; background:#fff1f0; border-radius:14px; padding:8px; font-size:13px; border:2px dashed #f0c6c0; display:flex; flex-direction:column; justify-content:space-between;}
 .product a {color:#3a3d55; text-decoration:none; font-weight:500;}
 .product a:hover {text-decoration:underline;}
 .product img {margin-top:6px; width:100%; border-radius:10px; border:1px dashed #f0c6c0; background:#fff;}
@@ -25,11 +24,13 @@ button:hover {transform:translateY(-2px);}
 .bottom-logo {display:flex; align-items:center; justify-content:center; gap:10px; margin-top:24px; padding-top:12px; border-top:1px solid #555555; color:#555555; font-size:14px; font-weight:500;}
 .bottom-logo img {width:36px; height:36px; border-radius:50%;}
 
-/* 右側浮動編輯面板 */
+/* 編輯面板 */
 .edit-panel {position:fixed; top:10px; right:10px; width:300px; max-height:90vh; overflow:auto; background:#fff; border:1px solid #ccc; border-radius:10px; padding:10px; z-index:999; box-shadow:2px 2px 10px rgba(0,0,0,0.2);}
 .edit-panel h3 {margin:6px 0;}
 .edit-panel label {font-size:12px; font-weight:600;}
 .edit-panel input, .edit-panel textarea {width:100%; margin-bottom:6px; border-radius:6px; border:1px solid #ccc; padding:4px 6px;}
+textarea {resize:vertical;}
+#generated-code {height:200px;}
 @media (max-width:500px){
   .edit-panel {position:fixed; width:90%; right:5%; top:5%; max-height:80vh;}
 }
@@ -50,7 +51,7 @@ button:hover {transform:translateY(-2px);}
   </div>
 </div>
 
-<!-- 右側浮動編輯面板 -->
+<!-- 編輯面板 -->
 <div class="edit-panel">
 <h3>編輯內容</h3>
 <label>標題</label>
@@ -72,6 +73,8 @@ button:hover {transform:translateY(-2px);}
 <label>跳轉網址</label>
 <input type="text" id="edit-redirect">
 <button onclick="updateContent()">更新頁面</button>
+<button onclick="generateCode()">產生程式碼</button>
+<textarea id="generated-code" readonly></textarea>
 </div>
 
 <script>
@@ -167,6 +170,12 @@ function updateContent(){
   });
 
   renderPage();
+}
+
+// 產生完整 HTML 程式碼
+function generateCode(){
+  const html = document.documentElement.outerHTML;
+  document.getElementById("generated-code").value = html;
 }
 
 renderPage();
