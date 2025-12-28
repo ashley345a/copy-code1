@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>優惠頁面 - 即時編輯 + 預覽</title>
+<style>
+body {margin:0; font-family:"Noto Sans TC",sans-serif; background:#f9f8f6; display:flex; justify-content:center; padding:20px 0;}
+.paper {background:#fffaf6; border-radius:24px; padding:24px 18px 40px; width:95%; max-width:440px; box-shadow:0 8px 20px rgba(0,0,0,0.08); text-align:center; position:relative;}
+.title {font-size:18px; font-weight:600; margin-bottom:8px; color:#3a3d55;}
+.subtitle {font-size:13px; color:#4b6c8c; margin-bottom:18px;}
+.product-row {display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:16px; text-align:center;}
+.product {width:30%; background:#fff1f0; border-radius:14px; padding:8px; font-size:13px; position:relative; border:2px dashed #f0c6c0; margin-bottom:8px;}
+.product a {color:#3a3d55; text-decoration:none; font-weight:500;}
+.product a:hover {text-decoration:underline;}
+.product img {margin-top:6px; width:100%; border-radius:10px; border:1px dashed #f0c6c0; background:#fff;}
+.copy-tip {font-size:13px; color:#ff6f61; font-weight:700; margin-bottom:8px;}
+.item {background:#fff1f0; border-radius:16px; padding:14px; margin-bottom:14px; text-align:center; border:2px dashed #f0c6c0; position:relative;}
+button {width:100%; border:none; border-radius:16px; padding:12px 0; font-size:14px; color:#fff; cursor:pointer; font-weight:600; background:linear-gradient(135deg,#ff9ccf,#4b6c8c); box-shadow:4px 4px 0 #f0c6c0, -2px -2px 0 #f0c6c0; transition:transform 0.15s;}
+button:hover {transform:translateY(-2px);}
+.copied {position:absolute; top:8px; right:12px; font-size:12px; color:#27ae60; display:none; font-weight:600;}
+.footer {margin-top:18px; font-size:13px; color:#3a3d55; line-height:1.5; text-align:left;}
+.footer b {color:#ff6f61; font-weight:700;}
+.bottom-logo {display:flex; align-items:center; justify-content:center; gap:10px; margin-top:24px; padding-top:12px; border-top:1px solid #555555; color:#555555; font-size:14px; font-weight:500;}
+.bottom-logo img {width:36px; height:36px; border-radius:50%;}
+.edit-panel {position:fixed; top:10px; right:10px; width:300px; max-height:90vh; overflow:auto; background:#fff; border:1px solid #ccc; border-radius:10px; padding:10px; z-index:999; box-shadow:2px 2px 10px rgba(0,0,0,0.2);}
+.edit-panel h3 {margin:6px 0;}
+.edit-panel label {font-size:12px; font-weight:600;}
+.edit-panel input, .edit-panel textarea {width:100%; margin-bottom:6px; border-radius:6px; border:1px solid #ccc; padding:4px 6px;}
+</style>
+</head>
+<body>
+
+<div class="paper">
+
+  <div class="title" id="title"></div>
+  <div class="subtitle" id="subtitle"></div>
+
+  <div class="product-row" id="product-row"></div>
+
+  <div class="copy-tip" id="copy-tip"></div>
+
+  <div id="coupon-container"></div>
+
+  <div class="footer" id="footer"></div>
+
+  <div class="bottom-logo">
+    <img id="logo" src="" alt="logo">
+    <span id="threads-id"></span>
+  </div>
+
+</div>
+
+<!-- 即時編輯面板 -->
+<div class="edit-panel">
+<h3>編輯內容</h3>
+<label>標題</label>
+<input type="text" id="edit-title">
+<label>子標題</label>
+<input type="text" id="edit-subtitle">
+<label>提示文字</label>
+<input type="text" id="edit-copyTip">
+<label>活動說明</label>
+<textarea id="edit-footer" rows="4"></textarea>
+<label>Logo URL</label>
+<input type="text" id="edit-logo">
+<label>Threads ID</label>
+<input type="text" id="edit-threads">
+<h3>商品 (名稱|連結|圖片URL, 用逗號分隔)</h3>
+<textarea id="edit-products" rows="6"></textarea>
+<h3>折扣碼 (文字|代碼, 用逗號分隔)</h3>
+<textarea id="edit-coupons" rows="4"></textarea>
+<label>跳轉網址</label>
+<input type="text" id="edit-redirect">
+<button onclick="updateContent()">更新頁面</button>
+</div>
+
+<script>
+let data = {
+  title: "(數量有限先用先贏)",
+  subtitle: "❗❗推薦買蝦皮直營商品，一件就免運（點⬇️）❗❗",
+  products: [
+    {name:"三層衛生紙", url:"https://s.shopee.tw/5L5CxSWsHl", img:"https://ppt.cc/farXdx@.jpg"},
+    {name:"義美小泡芙", url:"https://s.shopee.tw/2g4Rmc1sjv", img:"https://ppt.cc/fwNqbx@.jpg"},
+    {name:"巧克力酥片", url:"https://s.shopee.tw/6faaYj2jFp", img:"https://ppt.cc/fNB7Zx@.jpg"}
+  ],
+  copyTip: "⚠️ 跳轉後請點選左上角「輸入優惠代碼」 將折扣碼貼上",
+  coupons: [
+    {text:"複製滿 100 折 20 折扣碼", code:"68J4ZP8TAAS"},
+    {text:"複製滿 59 折 10 折扣碼", code:"45V35RQ4W"}
+  ],
+  footer: "📅 12/27-12/31 連續五天各有一張蝦皮店到店 $99 免運劵（已歸戶結帳選用即可）<br>🎉 12/31 周三免運日<br>• 01:00 前：隔日到貨 $99 免運<br>• 01:00 後：隔日到貨 $299 免運<br>• 02:00 前：蝦皮店到店 / OK 超商 $99 免運<br>• 02:00 後：蝦皮店到店 / OK 超商 $149 免運",
+  logo: "https://ppt.cc/fcZ4px@.jpg",
+  threadsId: "Threads｜@ashley345a",
+  redirectUrl: "https://s.shopee.tw/7fSOtpJWFd"
+};
+
+function renderPage(){
+  document.getElementById("title").innerHTML = data.title;
+  document.getElementById("subtitle").innerHTML = data.subtitle;
+  document.getElementById("copy-tip").innerHTML = data.copyTip;
+  document.getElementById("footer").innerHTML = data.footer;
+  document.getElementById("logo").src = data.logo;
+  document.getElementById("threads-id").innerHTML = data.threadsId;
+
+  const productRow = document.getElementById("product-row");
+  productRow.innerHTML="";
+  data.products.forEach(p=>{
+    const div = document.createElement("div");
+    div.className="product";
+    div.innerHTML=`<a href="${p.url}" target="_blank">${p.name}</a><img src="${p.img}" alt="${p.name}">`;
+    productRow.appendChild(div);
+  });
+
+  const couponContainer = document.getElementById("coupon-container");
+  couponContainer.innerHTML="";
+  data.coupons.forEach(c=>{
+    const div=document.createElement("div");
+    div.className="item";
+    div.innerHTML=`<button onclick="copyAndPreview(this,'${c.code}')">${c.text}</button><div class="copied">已複製 ✓</div>`;
+    couponContainer.appendChild(div);
+  });
+
+  document.getElementById("edit-title").value = data.title;
+  document.getElementById("edit-subtitle").value = data.subtitle;
+  document.getElementById("edit-copyTip").value = data.copyTip;
+  document.getElementById("edit-footer").value = data.footer;
+  document.getElementById("edit-logo").value = data.logo;
+  document.getElementById("edit-threads").value = data.threadsId;
+  document.getElementById("edit-redirect").value = data.redirectUrl;
+  document.getElementById("edit-products").value = data.products.map(p=>`${p.name},${p.url},${p.img}`).join("\n");
+  document.getElementById("edit-coupons").value = data.coupons.map(c=>`${c.text},${c.code}`).join("\n");
+}
+
+// 複製 + 預覽（不跳轉）
+function copyAndPreview(btn, code){
+  navigator.clipboard.writeText(code).then(()=>{
+    const copiedDiv = btn.nextElementSibling;
+    copiedDiv.style.display="block";
+    setTimeout(()=>copiedDiv.style.display="none",1500);
+    alert("已複製折扣碼！可在蝦皮貼上測試。");
+  }).catch(()=>alert("請長按手動複製"));
+}
+
+// 更新內容
+function updateContent(){
+  data
