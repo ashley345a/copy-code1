@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>蝦皮優惠頁面 - 編輯模式</title>
+<title>蝦皮優惠頁面 - 左預覽右編輯</title>
 <style>
-body {margin:0; font-family:"Noto Sans TC",sans-serif; background:#f9f8f6; display:flex; justify-content:center; padding:20px 0;}
+body {margin:0; font-family:"Noto Sans TC",sans-serif; background:#f9f8f6; display:flex; height:100vh;}
+.preview-container {flex:1; display:flex; justify-content:center; overflow:auto; padding:20px;}
 .paper {background:#fffaf6; border-radius:24px; padding:24px 18px 40px; width:95%; max-width:440px; box-shadow:0 8px 20px rgba(0,0,0,0.08); text-align:center; position:relative;}
 .title {font-size:18px; font-weight:600; margin-bottom:8px; color:#3a3d55;}
 .subtitle {font-size:13px; color:#4b6c8c; margin-bottom:18px;}
@@ -25,20 +26,19 @@ button:hover {transform:translateY(-2px);}
 .bottom-logo img {width:36px; height:36px; border-radius:50%;}
 
 /* 編輯面板 */
-.edit-panel {position:fixed; top:10px; right:10px; width:300px; max-height:90vh; overflow:auto; background:#fff; border:1px solid #ccc; border-radius:10px; padding:10px; z-index:999; box-shadow:2px 2px 10px rgba(0,0,0,0.2);}
+.edit-panel {width:300px; max-height:100vh; overflow:auto; background:#fff; border-left:1px solid #ccc; padding:10px; box-sizing:border-box;}
 .edit-panel h3 {margin:6px 0;}
 .edit-panel label {font-size:12px; font-weight:600;}
 .edit-panel input, .edit-panel textarea {width:100%; margin-bottom:6px; border-radius:6px; border:1px solid #ccc; padding:4px 6px;}
 textarea {resize:vertical;}
 #generated-code {height:200px;}
-@media (max-width:500px){
-  .edit-panel {position:fixed; width:90%; right:5%; top:5%; max-height:80vh;}
-}
 </style>
 </head>
 <body>
 
-<div class="paper">
+<!-- 左側預覽 -->
+<div class="preview-container">
+<div class="paper" id="preview">
   <div class="title" id="title"></div>
   <div class="subtitle" id="subtitle"></div>
   <div class="product-row" id="product-row"></div>
@@ -50,8 +50,9 @@ textarea {resize:vertical;}
     <span id="threads-id"></span>
   </div>
 </div>
+</div>
 
-<!-- 編輯面板 -->
+<!-- 右側編輯面板 -->
 <div class="edit-panel">
 <h3>編輯內容</h3>
 <label>標題</label>
@@ -72,8 +73,8 @@ textarea {resize:vertical;}
 <textarea id="edit-coupons" rows="4"></textarea>
 <label>跳轉網址</label>
 <input type="text" id="edit-redirect">
-<button onclick="updateContent()">更新頁面</button>
-<button onclick="generateCode()">產生程式碼</button>
+<button onclick="updateContent()">更新預覽</button>
+<button onclick="generateCode()">生成預覽 HTML</button>
 <textarea id="generated-code" readonly></textarea>
 </div>
 
@@ -97,7 +98,7 @@ let data = {
   redirectUrl:"https://s.shopee.tw/7fSOtpJWFd"
 };
 
-function renderPage(){
+function renderPreview(){
   document.getElementById("title").innerHTML = data.title;
   document.getElementById("subtitle").innerHTML = data.subtitle;
   document.getElementById("copy-tip").innerHTML = data.copyTip;
@@ -105,7 +106,6 @@ function renderPage(){
   document.getElementById("logo").src = data.logo;
   document.getElementById("threads-id").innerHTML = data.threadsId;
 
-  // 商品
   const productRow=document.getElementById("product-row");
   productRow.innerHTML="";
   data.products.forEach(p=>{
@@ -115,7 +115,6 @@ function renderPage(){
     productRow.appendChild(div);
   });
 
-  // 折扣碼
   const couponContainer=document.getElementById("coupon-container");
   couponContainer.innerHTML="";
   data.coupons.forEach(c=>{
@@ -125,7 +124,6 @@ function renderPage(){
     couponContainer.appendChild(div);
   });
 
-  // 編輯面板填值
   document.getElementById("edit-title").value=data.title;
   document.getElementById("edit-subtitle").value=data.subtitle;
   document.getElementById("edit-copyTip").value=data.copyTip;
@@ -137,7 +135,6 @@ function renderPage(){
   document.getElementById("edit-coupons").value=data.coupons.map(c=>`${c.text},${c.code}`).join("\n");
 }
 
-// 複製 + 跳轉
 function copyAndGo(btn, code){
   navigator.clipboard.writeText(code).then(()=>{
     const tip=btn.nextElementSibling;
@@ -147,7 +144,6 @@ function copyAndGo(btn, code){
   }).catch(()=>alert("請長按手動複製"));
 }
 
-// 更新內容
 function updateContent(){
   data.title=document.getElementById("edit-title").value;
   data.subtitle=document.getElementById("edit-subtitle").value;
@@ -169,16 +165,16 @@ function updateContent(){
     return {text,code};
   });
 
-  renderPage();
+  renderPreview();
 }
 
-// 產生完整 HTML 程式碼
+// 生成左側預覽 HTML
 function generateCode(){
-  const html = document.documentElement.outerHTML;
-  document.getElementById("generated-code").value = html;
+  const previewHTML = document.getElementById("preview").outerHTML;
+  document.getElementById("generated-code").value = previewHTML;
 }
 
-renderPage();
+renderPreview();
 </script>
 
 </body>
