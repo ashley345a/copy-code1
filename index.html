@@ -7,7 +7,19 @@
 <style>
 body {margin:0; font-family:"Noto Sans TC",sans-serif; background:#f9f8f6; display:flex; height:100vh;}
 .preview-container {flex:1; display:flex; justify-content:center; overflow:auto; padding:20px;}
-.paper {background:#fffaf6; border-radius:24px; padding:24px 18px 40px; width:95%; max-width:440px; box-shadow:0 8px 20px rgba(0,0,0,0.08); text-align:center; position:relative;}
+.paper {
+  background:#fffaf6;
+  border-radius:24px;
+  padding:24px 18px 40px;
+  width:95%;
+  max-width:440px;
+  min-width:280px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+  text-align:center;
+  position:relative;
+  margin:auto;
+  box-sizing:border-box;
+}
 .title {font-size:18px; font-weight:600; margin-bottom:8px; color:#3a3d55;}
 .subtitle {font-size:13px; color:#4b6c8c; margin-bottom:18px;}
 .product-row {display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:16px; text-align:center;}
@@ -32,6 +44,14 @@ button:hover {transform:translateY(-2px);}
 .edit-panel input, .edit-panel textarea {width:100%; margin-bottom:6px; border-radius:6px; border:1px solid #ccc; padding:4px 6px;}
 textarea {resize:vertical;}
 #generated-code {height:200px;}
+
+/* 響應式自動縮放 */
+@media (max-width: 480px) {
+  .product-row {grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width: 360px) {
+  .product-row {grid-template-columns:1fr;}
+}
 </style>
 </head>
 <body>
@@ -83,9 +103,9 @@ let data = {
   title:"(數量有限先用先贏)",
   subtitle:"❗❗推薦買蝦皮直營商品，一件就免運（點⬇️）❗❗",
   products:[
-    {name:"三層衛生紙", url:"https://s.shopee.tw/5L5CxSWsHl", img:"https://ppt.cc/farXdx@.jpg"},
-    {name:"義美小泡芙", url:"https://s.shopee.tw/2g4Rmc1sjv", img:"https://ppt.cc/fwNqbx@.jpg"},
-    {name:"巧克力酥片", url:"https://s.shopee.tw/6faaYj2jFp", img:"https://ppt.cc/fNB7Zx@.jpg"}
+    {name:"三層衛生紙", url:"https://s.shopee.tw/BN6sWCx96", img:"https://ppt.cc/farXdx@.jpg"},
+    {name:"義美小泡芙", url:"https://s.shopee.tw/4AtFdpbR11", img:"https://ppt.cc/fwNqbx@.jpg"},
+    {name:"巧克力酥片", url:"https://s.shopee.tw/4VW62RDgaP", img:"https://ppt.cc/fNB7Zx@.jpg"}
   ],
   copyTip:"⚠️ 跳轉後請點選左上角「輸入優惠代碼」 將折扣碼貼上",
   coupons:[
@@ -111,7 +131,7 @@ function renderPreview(){
   data.products.forEach(p=>{
     const div=document.createElement("div");
     div.className="product";
-    div.innerHTML=`<a href="${p.url}" target="_blank">${p.name}</a><img src="${p.img}" alt="${p.name}">`;
+    div.innerHTML=`<a href="${p.url}" target="_blank">${p.name}<br><img src="${p.img}" alt="${p.name}"></a>`;
     productRow.appendChild(div);
   });
 
@@ -168,7 +188,6 @@ function updateContent(){
   renderPreview();
 }
 
-// 生成左側預覽 HTML
 function generateCode(){
   const previewHTML = document.getElementById("preview").outerHTML;
   document.getElementById("generated-code").value = previewHTML;
