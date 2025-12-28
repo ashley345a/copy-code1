@@ -29,8 +29,22 @@ body {margin:0; font-family:"Noto Sans TC",sans-serif; background:#f9f8f6; displ
 .product img {margin-top:6px; width:100%; border-radius:10px; border:1px dashed #f0c6c0; background:#fff;}
 .copy-tip {font-size:13px; color:#ff6f61; font-weight:700; margin-bottom:8px;}
 .item {background:#fff1f0; border-radius:16px; padding:14px; margin-bottom:14px; text-align:center; border:2px dashed #f0c6c0; position:relative;}
-button {width:100%; border:none; border-radius:16px; padding:12px 0; font-size:14px; color:#fff; cursor:pointer; font-weight:600; background:linear-gradient(135deg,#ff9ccf,#4b6c8c); box-shadow:4px 4px 0 #f0c6c0, -2px -2px 0 #f0c6c0; transition:transform 0.15s;}
-button:hover {transform:translateY(-2px);}
+button {
+  width:100%;
+  border:none;
+  border-radius:16px;
+  padding:12px 0;
+  font-size:14px;
+  color:#fff;
+  cursor:pointer;
+  font-weight:600;
+  background:linear-gradient(135deg,#ff9ccf,#4b6c8c);
+  box-shadow:6px 6px 0 #f0c6c0, -3px -3px 0 #f0c6c0;
+  position:relative;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+button:hover {transform:translateY(-2px); box-shadow:4px 4px 0 #f0c6c0, -2px -2px 0 #f0c6c0;}
+button::after {content:"✂"; position:absolute; top:-6px; right:-6px; font-size:10px; color:#ff6f61;}
 .copied {position:absolute; top:8px; right:12px; font-size:12px; color:#27ae60; display:none; font-weight:600;}
 .footer {margin-top:18px; font-size:13px; color:#3a3d55; line-height:1.5; text-align:left;}
 .footer b {color:#ff6f61; font-weight:700;}
@@ -45,24 +59,19 @@ button:hover {transform:translateY(-2px);}
 textarea {resize:vertical;}
 #generated-code {height:200px;}
 
-/* 響應式自動縮放 */
-@media (max-width: 480px) {
-  .product-row {grid-template-columns:repeat(2,1fr);}
-}
-@media (max-width: 360px) {
-  .product-row {grid-template-columns:1fr;}
-}
+/* 響應式 */
+@media (max-width: 480px) {.product-row {grid-template-columns:repeat(2,1fr);}}
+@media (max-width: 360px) {.product-row {grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 
-<!-- 左側預覽 -->
 <div class="preview-container">
 <div class="paper" id="preview">
   <div class="title" id="title"></div>
   <div class="subtitle" id="subtitle"></div>
-  <div class="product-row" id="product-row"></div>
   <div class="copy-tip" id="copy-tip"></div>
+  <div class="product-row" id="product-row"></div>
   <div id="coupon-container"></div>
   <div class="footer" id="footer"></div>
   <div class="bottom-logo">
@@ -72,34 +81,24 @@ textarea {resize:vertical;}
 </div>
 </div>
 
-<!-- 右側編輯面板 -->
 <div class="edit-panel">
 <h3>編輯內容</h3>
-<label>標題</label>
-<input type="text" id="edit-title">
-<label>子標題</label>
-<input type="text" id="edit-subtitle">
-<label>提示文字</label>
-<input type="text" id="edit-copyTip">
-<label>活動說明</label>
-<textarea id="edit-footer" rows="4"></textarea>
-<label>Logo URL</label>
-<input type="text" id="edit-logo">
-<label>Threads ID</label>
-<input type="text" id="edit-threads">
-<h3>商品 (名稱,連結,圖片URL，每行一個)</h3>
-<textarea id="edit-products" rows="6"></textarea>
-<h3>折扣碼 (文字,代碼，每行一個)</h3>
-<textarea id="edit-coupons" rows="4"></textarea>
-<label>跳轉網址</label>
-<input type="text" id="edit-redirect">
+<label>標題</label><input type="text" id="edit-title">
+<label>子標題</label><input type="text" id="edit-subtitle">
+<label>提示文字</label><input type="text" id="edit-copyTip">
+<label>活動說明</label><textarea id="edit-footer" rows="4"></textarea>
+<label>Logo URL</label><input type="text" id="edit-logo">
+<label>Threads ID</label><input type="text" id="edit-threads">
+<h3>商品 (名稱,連結,圖片URL，每行一個)</h3><textarea id="edit-products" rows="6"></textarea>
+<h3>折扣碼 (文字,代碼，每行一個)</h3><textarea id="edit-coupons" rows="4"></textarea>
+<label>跳轉網址</label><input type="text" id="edit-redirect">
 <button onclick="updateContent()">更新預覽</button>
 <button onclick="generateCode()">生成預覽 HTML</button>
 <textarea id="generated-code" readonly></textarea>
 </div>
 
 <script>
-let data = {
+let data={
   title:"(數量有限先用先贏)",
   subtitle:"❗❗推薦買蝦皮直營商品，一件就免運（點⬇️）❗❗",
   products:[
@@ -119,12 +118,12 @@ let data = {
 };
 
 function renderPreview(){
-  document.getElementById("title").innerHTML = data.title;
-  document.getElementById("subtitle").innerHTML = data.subtitle;
-  document.getElementById("copy-tip").innerHTML = data.copyTip;
-  document.getElementById("footer").innerHTML = data.footer;
-  document.getElementById("logo").src = data.logo;
-  document.getElementById("threads-id").innerHTML = data.threadsId;
+  document.getElementById("title").innerHTML=data.title;
+  document.getElementById("subtitle").innerHTML=data.subtitle;
+  document.getElementById("copy-tip").innerHTML=data.copyTip;
+  document.getElementById("footer").innerHTML=data.footer;
+  document.getElementById("logo").src=data.logo;
+  document.getElementById("threads-id").innerHTML=data.threadsId;
 
   const productRow=document.getElementById("product-row");
   productRow.innerHTML="";
@@ -144,6 +143,7 @@ function renderPreview(){
     couponContainer.appendChild(div);
   });
 
+  // 編輯面板同步
   document.getElementById("edit-title").value=data.title;
   document.getElementById("edit-subtitle").value=data.subtitle;
   document.getElementById("edit-copyTip").value=data.copyTip;
@@ -155,6 +155,7 @@ function renderPreview(){
   document.getElementById("edit-coupons").value=data.coupons.map(c=>`${c.text},${c.code}`).join("\n");
 }
 
+// 複製 + 跳轉
 function copyAndGo(btn, code){
   navigator.clipboard.writeText(code).then(()=>{
     const tip=btn.nextElementSibling;
@@ -164,6 +165,7 @@ function copyAndGo(btn, code){
   }).catch(()=>alert("請長按手動複製"));
 }
 
+// 更新內容 + 自動保存
 function updateContent(){
   data.title=document.getElementById("edit-title").value;
   data.subtitle=document.getElementById("edit-subtitle").value;
@@ -174,27 +176,15 @@ function updateContent(){
   data.redirectUrl=document.getElementById("edit-redirect").value;
 
   const prodText=document.getElementById("edit-products").value.split("\n").filter(l=>l.trim());
-  data.products=prodText.map(l=>{
-    const [name,url,img]=l.split(",");
-    return {name,url,img};
-  });
+  data.products=prodText.map(l=>{const [name,url,img]=l.split(",");return {name,url,img};});
 
   const couponText=document.getElementById("edit-coupons").value.split("\n").filter(l=>l.trim());
-  data.coupons=couponText.map(l=>{
-    const [text,code]=l.split(",");
-    return {text,code};
-  });
+  data.coupons=couponText.map(l=>{const [text,code]=l.split(",");return {text,code};});
 
   renderPreview();
+  localStorage.setItem("copyPageData", JSON.stringify(data)); // 自動保存
 }
 
+// 生成預覽 HTML
 function generateCode(){
-  const previewHTML = document.getElementById("preview").outerHTML;
-  document.getElementById("generated-code").value = previewHTML;
-}
-
-renderPreview();
-</script>
-
-</body>
-</html>
+  const previewHTML=document
