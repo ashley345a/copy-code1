@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>優惠頁面 - 即時編輯 + 預覽</title>
+<title>蝦皮優惠頁面 - 即時編輯</title>
 <style>
+/* 基本版面 */
 body {margin:0; font-family:"Noto Sans TC",sans-serif; background:#f9f8f6; display:flex; justify-content:center; padding:20px 0;}
 .paper {background:#fffaf6; border-radius:24px; padding:24px 18px 40px; width:95%; max-width:440px; box-shadow:0 8px 20px rgba(0,0,0,0.08); text-align:center; position:relative;}
 .title {font-size:18px; font-weight:600; margin-bottom:8px; color:#3a3d55;}
@@ -23,35 +24,33 @@ button:hover {transform:translateY(-2px);}
 .footer b {color:#ff6f61; font-weight:700;}
 .bottom-logo {display:flex; align-items:center; justify-content:center; gap:10px; margin-top:24px; padding-top:12px; border-top:1px solid #555555; color:#555555; font-size:14px; font-weight:500;}
 .bottom-logo img {width:36px; height:36px; border-radius:50%;}
+
+/* 右側浮動編輯面板 */
 .edit-panel {position:fixed; top:10px; right:10px; width:300px; max-height:90vh; overflow:auto; background:#fff; border:1px solid #ccc; border-radius:10px; padding:10px; z-index:999; box-shadow:2px 2px 10px rgba(0,0,0,0.2);}
 .edit-panel h3 {margin:6px 0;}
 .edit-panel label {font-size:12px; font-weight:600;}
 .edit-panel input, .edit-panel textarea {width:100%; margin-bottom:6px; border-radius:6px; border:1px solid #ccc; padding:4px 6px;}
+@media (max-width:500px){
+  .edit-panel {position:fixed; width:90%; right:5%; top:5%; max-height:80vh;}
+}
 </style>
 </head>
 <body>
 
 <div class="paper">
-
   <div class="title" id="title"></div>
   <div class="subtitle" id="subtitle"></div>
-
   <div class="product-row" id="product-row"></div>
-
   <div class="copy-tip" id="copy-tip"></div>
-
   <div id="coupon-container"></div>
-
   <div class="footer" id="footer"></div>
-
   <div class="bottom-logo">
     <img id="logo" src="" alt="logo">
     <span id="threads-id"></span>
   </div>
-
 </div>
 
-<!-- 即時編輯面板 -->
+<!-- 右側浮動編輯面板 -->
 <div class="edit-panel">
 <h3>編輯內容</h3>
 <label>標題</label>
@@ -66,9 +65,9 @@ button:hover {transform:translateY(-2px);}
 <input type="text" id="edit-logo">
 <label>Threads ID</label>
 <input type="text" id="edit-threads">
-<h3>商品 (名稱|連結|圖片URL, 用逗號分隔)</h3>
+<h3>商品 (名稱,連結,圖片URL，每行一個)</h3>
 <textarea id="edit-products" rows="6"></textarea>
-<h3>折扣碼 (文字|代碼, 用逗號分隔)</h3>
+<h3>折扣碼 (文字,代碼，每行一個)</h3>
 <textarea id="edit-coupons" rows="4"></textarea>
 <label>跳轉網址</label>
 <input type="text" id="edit-redirect">
@@ -77,22 +76,22 @@ button:hover {transform:translateY(-2px);}
 
 <script>
 let data = {
-  title: "(數量有限先用先贏)",
-  subtitle: "❗❗推薦買蝦皮直營商品，一件就免運（點⬇️）❗❗",
-  products: [
+  title:"(數量有限先用先贏)",
+  subtitle:"❗❗推薦買蝦皮直營商品，一件就免運（點⬇️）❗❗",
+  products:[
     {name:"三層衛生紙", url:"https://s.shopee.tw/5L5CxSWsHl", img:"https://ppt.cc/farXdx@.jpg"},
     {name:"義美小泡芙", url:"https://s.shopee.tw/2g4Rmc1sjv", img:"https://ppt.cc/fwNqbx@.jpg"},
     {name:"巧克力酥片", url:"https://s.shopee.tw/6faaYj2jFp", img:"https://ppt.cc/fNB7Zx@.jpg"}
   ],
-  copyTip: "⚠️ 跳轉後請點選左上角「輸入優惠代碼」 將折扣碼貼上",
-  coupons: [
+  copyTip:"⚠️ 跳轉後請點選左上角「輸入優惠代碼」 將折扣碼貼上",
+  coupons:[
     {text:"複製滿 100 折 20 折扣碼", code:"68J4ZP8TAAS"},
     {text:"複製滿 59 折 10 折扣碼", code:"45V35RQ4W"}
   ],
-  footer: "📅 12/27-12/31 連續五天各有一張蝦皮店到店 $99 免運劵（已歸戶結帳選用即可）<br>🎉 12/31 周三免運日<br>• 01:00 前：隔日到貨 $99 免運<br>• 01:00 後：隔日到貨 $299 免運<br>• 02:00 前：蝦皮店到店 / OK 超商 $99 免運<br>• 02:00 後：蝦皮店到店 / OK 超商 $149 免運",
-  logo: "https://ppt.cc/fcZ4px@.jpg",
-  threadsId: "Threads｜@ashley345a",
-  redirectUrl: "https://s.shopee.tw/7fSOtpJWFd"
+  footer:"📅 12/27-12/31 連續五天各有一張蝦皮店到店 $99 免運劵（已歸戶結帳選用即可）<br>🎉 12/31 周三免運日<br>• 01:00 前：隔日到貨 $99 免運<br>• 01:00 後：隔日到貨 $299 免運<br>• 02:00 前：蝦皮店到店 / OK 超商 $99 免運<br>• 02:00 後：蝦皮店到店 / OK 超商 $149 免運",
+  logo:"https://ppt.cc/fcZ4px@.jpg",
+  threadsId:"Threads｜@ashley345a",
+  redirectUrl:"https://s.shopee.tw/7fSOtpJWFd"
 };
 
 function renderPage(){
@@ -103,45 +102,75 @@ function renderPage(){
   document.getElementById("logo").src = data.logo;
   document.getElementById("threads-id").innerHTML = data.threadsId;
 
-  const productRow = document.getElementById("product-row");
+  // 商品
+  const productRow=document.getElementById("product-row");
   productRow.innerHTML="";
   data.products.forEach(p=>{
-    const div = document.createElement("div");
+    const div=document.createElement("div");
     div.className="product";
     div.innerHTML=`<a href="${p.url}" target="_blank">${p.name}</a><img src="${p.img}" alt="${p.name}">`;
     productRow.appendChild(div);
   });
 
-  const couponContainer = document.getElementById("coupon-container");
+  // 折扣碼
+  const couponContainer=document.getElementById("coupon-container");
   couponContainer.innerHTML="";
   data.coupons.forEach(c=>{
     const div=document.createElement("div");
     div.className="item";
-    div.innerHTML=`<button onclick="copyAndPreview(this,'${c.code}')">${c.text}</button><div class="copied">已複製 ✓</div>`;
+    div.innerHTML=`<button onclick="copyAndGo(this,'${c.code}')">${c.text}</button><div class="copied">已複製 ✓</div>`;
     couponContainer.appendChild(div);
   });
 
-  document.getElementById("edit-title").value = data.title;
-  document.getElementById("edit-subtitle").value = data.subtitle;
-  document.getElementById("edit-copyTip").value = data.copyTip;
-  document.getElementById("edit-footer").value = data.footer;
-  document.getElementById("edit-logo").value = data.logo;
-  document.getElementById("edit-threads").value = data.threadsId;
-  document.getElementById("edit-redirect").value = data.redirectUrl;
-  document.getElementById("edit-products").value = data.products.map(p=>`${p.name},${p.url},${p.img}`).join("\n");
-  document.getElementById("edit-coupons").value = data.coupons.map(c=>`${c.text},${c.code}`).join("\n");
+  // 編輯面板填值
+  document.getElementById("edit-title").value=data.title;
+  document.getElementById("edit-subtitle").value=data.subtitle;
+  document.getElementById("edit-copyTip").value=data.copyTip;
+  document.getElementById("edit-footer").value=data.footer;
+  document.getElementById("edit-logo").value=data.logo;
+  document.getElementById("edit-threads").value=data.threadsId;
+  document.getElementById("edit-redirect").value=data.redirectUrl;
+  document.getElementById("edit-products").value=data.products.map(p=>`${p.name},${p.url},${p.img}`).join("\n");
+  document.getElementById("edit-coupons").value=data.coupons.map(c=>`${c.text},${c.code}`).join("\n");
 }
 
-// 複製 + 預覽（不跳轉）
-function copyAndPreview(btn, code){
+// 複製 + 跳轉
+function copyAndGo(btn, code){
   navigator.clipboard.writeText(code).then(()=>{
-    const copiedDiv = btn.nextElementSibling;
-    copiedDiv.style.display="block";
-    setTimeout(()=>copiedDiv.style.display="none",1500);
-    alert("已複製折扣碼！可在蝦皮貼上測試。");
+    const tip=btn.nextElementSibling;
+    tip.style.display="block";
+    setTimeout(()=>tip.style.display="none",1500);
+    setTimeout(()=>{window.location.href=data.redirectUrl},500);
   }).catch(()=>alert("請長按手動複製"));
 }
 
 // 更新內容
 function updateContent(){
-  data
+  data.title=document.getElementById("edit-title").value;
+  data.subtitle=document.getElementById("edit-subtitle").value;
+  data.copyTip=document.getElementById("edit-copyTip").value;
+  data.footer=document.getElementById("edit-footer").value;
+  data.logo=document.getElementById("edit-logo").value;
+  data.threadsId=document.getElementById("edit-threads").value;
+  data.redirectUrl=document.getElementById("edit-redirect").value;
+
+  const prodText=document.getElementById("edit-products").value.split("\n").filter(l=>l.trim());
+  data.products=prodText.map(l=>{
+    const [name,url,img]=l.split(",");
+    return {name,url,img};
+  });
+
+  const couponText=document.getElementById("edit-coupons").value.split("\n").filter(l=>l.trim());
+  data.coupons=couponText.map(l=>{
+    const [text,code]=l.split(",");
+    return {text,code};
+  });
+
+  renderPage();
+}
+
+renderPage();
+</script>
+
+</body>
+</html>
